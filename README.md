@@ -1,6 +1,6 @@
 # Selenium Chrome Automation
 
-This project uses [Selenium](https://www.selenium.dev/) to automate tasks in Google Chrome.
+This project uses [Selenium](https://www.selenium.dev/) to automate tasks in Google Chrome
 
 ## Requirements
 - Python **3.7+**
@@ -8,7 +8,7 @@ This project uses [Selenium](https://www.selenium.dev/) to automate tasks in Goo
 
 ## Setup
 
-Clone the repository, create a virtual environment, and install the dependency.
+Clone the repository, create a virtual environment, and install the dependency
 
 ### macOS / Linux
 
@@ -28,4 +28,4 @@ source venv/bin/activate
 pip install selenium
 
 # Run the script
-python script.py
+python bot.py
