@@ -16,7 +16,8 @@ class PadelBot:
     def __init__(self, driver):
         self.driver = driver
 
-    def find_date(self, target_day, target_date, target_month):
+    def find_date(self, target_day: str, target_date: int, target_month: str):
+        """Return the target date button"""
         date_buttons = WebDriverWait(self.driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "button.day-btn"))
         )
@@ -40,7 +41,8 @@ class PadelBot:
         
         raise Exception("Can't find the date you are looking for")
 
-    def find_slot(self, target_slot):
+    def find_slot(self, target_slot: str):
+        """Return the target slot button"""
         slot_buttons = WebDriverWait(self.driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "button.slot-button-small"))
         )
@@ -54,6 +56,7 @@ class PadelBot:
         raise Exception("Can't find the slot you are looking for")
 
     def find_resa(self):
+        """Return the target reservation button"""
         resa_infos = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.card-body-session-description"))
         )
@@ -71,6 +74,7 @@ class PadelBot:
         raise Exception("Can't find the resa you are looking for")
 
     def connection(self):
+        """Log in to the website"""
         username = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//input[@type='email']"))
         )
@@ -84,6 +88,7 @@ class PadelBot:
         self.driver.find_element(By.CSS_SELECTOR, "button.email-link-btn").click()
 
     def input_gymlib_codes(self):
+        """Input and submit Gymlib codes"""
         promo_btn = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "a.addCodePromo"))
         )
@@ -111,6 +116,7 @@ class PadelBot:
         submit_btn.click()
 
     def payment_info(self):
+        """Input and submit payment informations"""
         first_name = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "firstname")))
         first_name.send_keys(FIRST_NAME)
 
@@ -153,6 +159,7 @@ class PadelBot:
         checkout.click()
 
     def get_date(self):
+        """Search and click target date"""
         attempts = 0
         while attempts < MAX_ATTEMPTS:
             try:
@@ -171,6 +178,7 @@ class PadelBot:
                 attempts += 1
 
     def get_slot(self):
+        """Search and click target slot"""
         attempts = 0
         while attempts < MAX_ATTEMPTS:
             try:
@@ -189,6 +197,7 @@ class PadelBot:
                 attempts += 1
 
     def get_resa(self):
+        """Search and click target reservation"""
         attempts = 0
         while attempts < MAX_ATTEMPTS:
             try:
@@ -208,6 +217,7 @@ class PadelBot:
                 attempts += 1
 
     def co_and_resa(self):
+        """Log in and make the reservation"""
         self.driver.get(LOGIN_PAGE)
 
         try:
@@ -222,6 +232,7 @@ class PadelBot:
         self.get_resa()
 
 def start_bot():
+    """Wait until 2 seconds before the slot is available to start"""
     slot_time = SLOT.split(":")
     target_time = datetime(YEAR, MONTH_NBR, int(DATE), int(slot_time[0]), int(slot_time[1]), 0)
     print("Target slot = ", target_time, DURATION)
@@ -278,7 +289,6 @@ def main():
 
     input("PRESS ENTER TO CLOSE WINDOW AND QUIT")
     driver.quit()
-
 
 if __name__ == "__main__":
     main()
