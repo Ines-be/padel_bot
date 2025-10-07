@@ -6,7 +6,7 @@ from selenium.common.exceptions import TimeoutException
 from datetime import datetime, timedelta
 import time
 
-# variables ici
+# variables
 
 MAX_ATTEMPTS = 30
 MONTHS = ["Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."]
