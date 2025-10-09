@@ -1,6 +1,7 @@
 # Reservation Bot
 
-This project is a Python automation bot that allows users to automatically reserve a time slot on a website. The bot uses Selenium to interact with the website, simulating user actions in a browser. The bot logs in, searches for the desired slot, reserves it, and completes checkout with optional promo code and payment information.
+This project is a Python automation bot that allows users to automatically reserve a time slot on a website.  
+The bot uses Selenium to interact with the website, simulating user actions in a browser: the bot logs in, searches for the desired slot, reserves it, and completes checkout with optional promo code and payment information.  
 All sensitive information and configurable parameters are stored in a .env file
 
 ## Features
@@ -13,13 +14,13 @@ All sensitive information and configurable parameters are stored in a .env file
 
 ## How It Works
 Selenium opens a real browser window, so you can watch the automation in action:
-1. Login:
+1. **Login**:
 The bot opens the website and logs in using the credentials provided in the .env file.
-2. Navigation:
+2. **Navigation**:
 It navigates the site to find the desired time slot.
-3. Reservation:
+3. **Reservation**:
 Once the time slot is found, the bot selects it and proceeds to the reservation.
-4. Checkout:
+4. **Checkout**:
 The bot completes the checkout process, applying a promo code if provided and handling the payment confirmation.
 
 ## Requirements
