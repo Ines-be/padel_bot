@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     LAST_NAME: str
     GYMLIB_CODES: list
     EMAILS: list
+    SECONDS_BEFORE_START: int
     CARD_NUMBER: str
     EXP_DATE: str
     CVC: str
@@ -29,23 +30,9 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-def start_bot():
-    """Wait until 2 seconds before the slot is available to start"""
-    slot_time = settings.SLOT.split(":")
-    target_time = datetime(
-        settings.YEAR,
-        settings.MONTH_NBR,
-        int(settings.DATE),
-        int(slot_time[0]),
-        int(slot_time[1]),
-        0,
-    )
-    start_time = target_time - timedelta(days=6, seconds=2)
+def get_cur_time() -> str:
+    return datetime.now().strftime("%H:%M:%S")
 
-    print("Target slot = ", target_time, settings.DURATION)
-    print("Start time = ", start_time)
 
-    print("Waiting...")
-    while datetime.now() < start_time:
-        time.sleep(0.5)
-    print("Starting")
+def print_log(*args: any):
+    print(get_cur_time(), *args)

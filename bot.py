@@ -1,7 +1,15 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config import settings
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    JavascriptException,
+    WebDriverException,
+    ElementClickInterceptedException,
+    TimeoutException,
+)
+from config import settings, print_log
+from datetime import datetime, timedelta
 import time
 
 MAX_ATTEMPTS = 30
@@ -10,6 +18,15 @@ MAX_ATTEMPTS = 30
 class PadelBot:
     def __init__(self, driver):
         self.driver = driver
+        self.slot_time = settings.SLOT.split(":")
+        self.target_slot = datetime(
+            settings.YEAR,
+            settings.MONTH_NBR,
+            int(settings.DATE),
+            int(self.slot_time[0]),
+            int(self.slot_time[1]),
+            0,
+        )
 
     def find_date(self, target_day: str, target_date: int, target_month: str):
         """Return the target date button"""
@@ -48,7 +65,7 @@ class PadelBot:
 
         for slot in slot_buttons:
             text = slot.text.strip()
-            print("Found slot: ", repr(text))
+            print_log("Found slot: ", repr(text))
             if target_slot == text:
                 return slot
 
@@ -70,7 +87,7 @@ class PadelBot:
             split = [p.strip() for p in info.split("-")]
             if len(split) >= 3:
                 duration = split[-1]
-                print("Found resa: ", duration)
+                print_log("Found resa: ", duration)
                 if duration == settings.DURATION:
                     button = resa.find_element(
                         By.XPATH, "../../following-sibling::div[@class='tarif']//button"
@@ -126,10 +143,7 @@ class PadelBot:
             )
             email.send_keys(settings.EMAILS[i])
 
-        submit_btn = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button.submit.mx-auto"))
-        )
-        submit_btn.click()
+        self.click_btn(By.CSS_SELECTOR, "button.submit.mx-auto", "submit_btn")
 
     def payment_info(self):
         """Input and submit payment informations"""
@@ -143,11 +157,8 @@ class PadelBot:
         )
         last_name.send_keys(settings.LAST_NAME)
 
-        confirm_btn = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "submit"))
-        )
-        confirm_btn.click()
-        print("Success: personal info filled")
+        self.click_btn(By.ID, "submit", "confirm_btn")
+        print_log("Success: personal info filled")
 
         WebDriverWait(self.driver, 10).until(
             EC.frame_to_be_available_and_switch_to_it(
@@ -179,11 +190,25 @@ class PadelBot:
         )
         cvc.send_keys(settings.CVC)
 
-        print("Success: credit card info filled")
-        checkout = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "submit"))
-        )
-        checkout.click()
+        print_log("Success: credit card info filled")
+        self.click_btn(By.ID, "submit", "checkout")
+
+    def click_with_js(self, by: By, value: str, description: str) -> bool:
+        """Finds element and clicks on it"""
+        try:
+            element = self.driver.find_element(by, value)
+            self.driver.execute_script("arguments[0].click();", element)
+            print_log(f"Clicked on {description}")
+            return True
+        except NoSuchElementException:
+            print_log(f"Error: {description} not found")
+        except JavascriptException as e:
+            print_log(f"Error: JS click failed for {description}")
+        except WebDriverException as e:
+            print_log(f"Error: webdriver exception while trying to click {description}")
+        except Exception as e:
+            print_log(f"Error: unexpected error clicking {description}: {e}")
+        return False
 
     def get_date(self):
         """Search and click target date"""
@@ -212,10 +237,10 @@ class PadelBot:
                 )
                 time.sleep(0.2)
                 date_btn.click()
-                print("Success: date found")
+                print_log("Success: date found")
                 return
             except Exception as e:
-                print("Error: date not found: ", e)
+                print_log("Error: date not found: ", e)
                 self.driver.refresh()
                 time.sleep(0.5)
                 attempts += 1
@@ -230,13 +255,13 @@ class PadelBot:
                     EC.element_to_be_clickable(slot_btn)
                 )
                 slot_btn.click()
-                print("Success: slot found")
+                print_log("Success: slot found")
                 return
             except Exception as e:
-                print("Error: slot not found: ", e)
+                print_log("Error: slot not found: ", e)
                 self.driver.get(settings.RESERVATION_PAGE)
-                self.get_date()
                 time.sleep(0.5)
+                self.get_date()
                 attempts += 1
 
     def get_resa(self):
@@ -249,27 +274,83 @@ class PadelBot:
                     EC.element_to_be_clickable(resa_btn)
                 )
                 resa_btn.click()
-                print("Success: resa found")
+                print_log("Success: resa found")
                 return
             except Exception as e:
-                print("Error: resa not found: ", e)
+                print_log("Error: resa not found: ", e)
                 self.driver.get(settings.RESERVATION_PAGE)
+                time.sleep(0.5)
                 self.get_date()
                 self.get_slot()
-                time.sleep(0.5)
                 attempts += 1
 
-    def co_and_resa(self):
-        """Log in and make the reservation"""
-        self.driver.get(settings.LOGIN_PAGE)
+    def login(self):
+        """Go to log in page and log in"""
+        if self.driver.current_url.startswith(settings.RESERVATION_PAGE):
+            return
 
         try:
+            if not self.driver.current_url.startswith(settings.LOGIN_PAGE):
+                self.driver.get(settings.LOGIN_PAGE)
             self.connection()
-            print("Success: connection")
+            print_log("Success: connection")
         except:
             raise Exception("connection failed")
 
+    def make_reservation(self):
+        """Go to reservation page and make the reservation"""
         self.driver.get(settings.RESERVATION_PAGE)
         self.get_date()
         self.get_slot()
         self.get_resa()
+
+    def click_btn(self, by: By, value: str, description: str):
+        """Wait for element to be clickable and click"""
+        while True:
+            try:
+                pay_btn = WebDriverWait(self.driver, 10).until(
+                    EC.element_to_be_clickable((by, value))
+                )
+                pay_btn.click()
+                break
+            except NoSuchElementException:
+                print_log(f"ERROR: {description} not found")
+            except ElementClickInterceptedException:
+                print_log(f"ERROR: {description} not clickable")
+            except TimeoutException:
+                print_log(f"ERROR: timeout while trying to click {description}")
+            except Exception as e:
+                print_log(
+                    f"ERROR: unexpected error while trying to click {description}: {e}"
+                )
+
+    def confirm_cart(self):
+        """Click the checkbox and click the submit button"""
+        ret = False
+        while not ret:
+            ret = self.click_with_js(By.XPATH, "//input[@type='checkbox']", "checkbox")
+            if not ret:
+                time.sleep(0.3)
+
+        self.click_btn(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
+
+    def bot_wait(self, action: str, start_time: any):
+        """Wait until start_time"""
+        print_log("Target slot = ", self.target_slot, settings.DURATION)
+        print_log("{action} start time = ", start_time)
+
+        print_log("Waiting...")
+        while datetime.now() < start_time:
+            time.sleep(0.5)
+        print_log("Wait is over")
+
+    def login_and_wait(self):
+        """Logs in 1 minute before the slot release and waits for the slot"""
+        login_time = self.target_slot - timedelta(days=6, minutes=1)
+        self.bot_wait("Login", login_time)
+        self.login()
+
+        start_time = self.target_slot - timedelta(
+            days=6, seconds=settings.SECONDS_BEFORE_START
+        )
+        self.bot_wait("Make reservation", start_time)
