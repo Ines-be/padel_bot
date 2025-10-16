@@ -287,6 +287,7 @@ class PadelBot:
     def login(self):
         """Go to log in page and log in"""
         if self.driver.current_url.startswith(settings.RESERVATION_PAGE):
+            print_log("No need to log in")
             return
 
         try:
@@ -299,7 +300,9 @@ class PadelBot:
 
     def make_reservation(self):
         """Go to reservation page and make the reservation"""
-        self.driver.get(settings.RESERVATION_PAGE)
+        if not self.driver.current_url.startswith(settings.RESERVATION_PAGE):
+            self.driver.get(settings.RESERVATION_PAGE)
+
         self.get_date()
         self.get_slot()
         self.get_resa()
@@ -332,12 +335,19 @@ class PadelBot:
             if not ret:
                 time.sleep(0.3)
 
-        self.click_btn(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
+        time.sleep(0.4)
+        ret = False
+        while not ret:
+            ret = self.click_with_js(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
+            if not ret:
+                time.sleep(0.3)
+
+        # self.click_btn(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
 
     def bot_wait(self, action: str, start_time: any):
         """Wait until start_time"""
         print_log("Target slot = ", self.target_slot, settings.DURATION)
-        print_log("{action} start time = ", start_time)
+        print_log(f"{action} start time = ", start_time)
 
         print_log("Waiting...")
         while datetime.now() < start_time:

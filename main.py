@@ -10,6 +10,7 @@ def main():
 
     pb = PadelBot(driver)
     pb.login_and_wait()
+    driver.get(settings.RESERVATION_PAGE)
 
     while True:
         try:
@@ -31,7 +32,7 @@ def main():
     try:
         pb.input_gymlib_codes()
         pb.confirm_cart()
-        # pb.payment_info()
+        pb.payment_info()
 
     except Exception as e:
         print_log("Error: ", e)
