@@ -105,6 +105,8 @@ class PadelBot:
             EC.element_to_be_clickable((By.XPATH, "//input[@type='password']"))
         )
 
+        username.clear()
+        password.clear()
         username.send_keys(settings.USERNAME)
         password.send_keys(settings.PASSWORD)
 
@@ -131,6 +133,7 @@ class PadelBot:
                     )
                 )
             )
+            gym_code.clear()
             gym_code.send_keys(settings.GYMLIB_CODES[i])
 
             email = WebDriverWait(self.driver, 10).until(
@@ -141,6 +144,7 @@ class PadelBot:
                     )
                 )
             )
+            email.clear()
             email.send_keys(settings.EMAILS[i])
 
         self.click_btn(By.CSS_SELECTOR, "button.submit.mx-auto", "submit_btn")
@@ -150,11 +154,13 @@ class PadelBot:
         first_name = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, "firstname"))
         )
+        first_name.clear()
         first_name.send_keys(settings.FIRST_NAME)
 
         last_name = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, "lastName"))
         )
+        last_name.clear()
         last_name.send_keys(settings.LAST_NAME)
 
         self.click_btn(By.ID, "submit", "confirm_btn")
@@ -178,16 +184,19 @@ class PadelBot:
             EC.element_to_be_clickable((By.NAME, "number"))
         )
         card_nbr.click()
+        card_nbr.clear()
         card_nbr.send_keys(settings.CARD_NUMBER)
 
         exp = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.ID, "Field-expiryInput"))
         )
+        exp.clear()
         exp.send_keys(settings.EXP_DATE)
 
         cvc = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.ID, "Field-cvcInput"))
         )
+        cvc.clear()
         cvc.send_keys(settings.CVC)
 
         print_log("Success: credit card info filled")
@@ -335,14 +344,7 @@ class PadelBot:
             if not ret:
                 time.sleep(0.3)
 
-        time.sleep(0.4)
-        ret = False
-        while not ret:
-            ret = self.click_with_js(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
-            if not ret:
-                time.sleep(0.3)
-
-        # self.click_btn(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
+        self.click_btn(By.CSS_SELECTOR, "button.rcorners.btn-marginTop", "pay_btn")
 
     def bot_wait(self, action: str, start_time: any):
         """Wait until start_time"""
