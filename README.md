@@ -40,7 +40,7 @@ Clone the repository, create a virtual environment, and install the dependencies
 python3 --version
 
 # Clone the repo
-git clone git@github.com:Ines-be/padel_bot.git
+git clone git@github.com:Ines-be/reservation_bot.git
 cd padel_bot
 
 # Create and activate a virtual environment
