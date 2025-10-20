@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     PASSWORD: str
     LOGIN_PAGE: str
     RESERVATION_PAGE: str
+    ACCOUNT_PAGE: str
     DAY: str
     DATE: int
     MONTH_NBR: int
@@ -25,6 +26,7 @@ class Settings(BaseSettings):
     CARD_NUMBER: str
     EXP_DATE: str
     CVC: str
+    USER_AGENT: str
 
 
 settings = Settings()

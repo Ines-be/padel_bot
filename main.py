@@ -6,8 +6,11 @@ from config import print_log
 
 def main():
     driver = webdriver.Chrome()
-    driver.get(settings.LOGIN_PAGE)
+    options = webdriver.ChromeOptions()
+    options.add_argument(f"user-agent={settings.USER_AGENT}")
+    driver = webdriver.Chrome(options=options)
 
+    driver.get(settings.LOGIN_PAGE)
     pb = PadelBot(driver)
     pb.login_and_wait()
     driver.get(settings.RESERVATION_PAGE)
