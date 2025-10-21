@@ -1,19 +1,30 @@
 # Reservation Bot
 
-This project is a Python automation bot that allows users to automatically reserve a time slot on a website.  
-The bot uses Selenium to interact with the website, simulating user actions in a browser: the bot logs in, searches for the desired slot, reserves it, and completes checkout with optional promo code and payment information.  
+This project is an **automation bot built with Python and Selenium** that streamlines the process of booking sports fields through an online reservation platform.  
+It automates every step — from login and time slot selection to booking confirmation and payment — achieving faster and more reliable reservations.
+
+## 🤖 Overview
+The bot allows users to automatically reserve a time slot on a website, it uses Selenium to interact with the website, simulating user actions in a browser: the bot logs in, searches for the desired slot, reserves it, and completes checkout with optional promo code and payment information.  
 All sensitive information and configurable parameters are stored in a .env file
 
-## Features
-- Automatically opens a web browser and navigates to the website.
-- Logs in with credentials stored in .env file.
-- Searches for a specific time slot.
-- Reserves the selected time slot.
-- Completes the checkout process, including payment and promo code application.
-- Fully configurable via environment variables (.env) for credentials, dates, and site URLs.
+## 🚀 Features
+- **Full Automation Pipeline**  
+Automatically opens a web browser and navigates to the website, logs in, searches for the selected time slot, confims booking, and completes the checkout process, including payment and promo code application.
 
-## How It Works
-Selenium opens a real browser window, so you can watch the automation in action:
+- **Dynamic Page Handling**  
+Uses dynamic wait management (`WebDriverWait`) to handle aynchonous content loading.
+
+- **Error Handling and Logging**  
+Integrated retry mecanisms, detailed logging, and exception handling for improved reliability.
+
+- **Fully Configurable via Environment Variables**  
+All credentials, dates, and site URLs are managed through a `.env` file for flexible setup and deployment.
+
+- **Performance Boost**  
+  Increased successful weekly reservations from **2 to 6** and reduced average booking time from **~2 minutes to <4 seconds**.
+
+## 🧠 How It Works
+Selenium opens a browser window, so you can watch the automation in action:
 1. **Login**:
 The bot opens the website and logs in using the credentials provided in the .env file.
 2. **Navigation**:
@@ -23,13 +34,13 @@ Once the time slot is found, the bot selects it and proceeds to the reservation.
 4. **Checkout**:
 The bot completes the checkout process, applying a promo code if provided and handling the payment confirmation.
 
-## Requirements
+## ⚙️ Requirements
 - Python **3.7+**
 - Google Chrome installed on your system
 - Selenium for browser automation
 - pydantic-settings for configuration management
 
-## Setup
+## 🛠️ Setup and installation
 
 Clone the repository, create a virtual environment, and install the dependencies.
 
